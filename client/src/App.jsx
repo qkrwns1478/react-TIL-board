@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./Home";
-import Login from "./Login";
-import Signup from "./Signup";
+import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
 import Error from "./Error";
@@ -15,8 +14,8 @@ function App() {
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login />} />
-					<Route path="/signup" element={<Signup />} />
+                    <Route path="/login" element={<LoginForm mode="login" />} />
+                    <Route path="/signup" element={<LoginForm mode="signup" />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>
