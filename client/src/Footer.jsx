@@ -1,9 +1,11 @@
-import "./css/Footer.css";
+import "./css/Header.css";
 
 function Footer () {
     return (
         <footer>
-            <h2>This is Footer</h2>
+            <div>
+                <p className="read-the-docs">© 2025 <a href="https://github.com/qkrwns1478">qkrwns1478</a>. All rights reserved.</p>
+            </div>
         </footer>
     );
 };

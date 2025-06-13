@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
+import Signup from "./Signup";
 import Header from "./Header";
 import Footer from "./Footer";
 import Error from "./Error";
@@ -12,12 +13,10 @@ function App() {
         <BrowserRouter>
             <Header />
             <main>
-                <nav>
-                    <Link to="/">HOME</Link> | <Link to="/login">로그인</Link>
-                </nav>
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
+					<Route path="/signup" element={<Signup />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>

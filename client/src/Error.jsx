@@ -1,8 +1,6 @@
 function Error () {
     return (
-        <h2>
-            404 Error
-        </h2>
+        <h1>404 Error</h1>
     );
 }
 
