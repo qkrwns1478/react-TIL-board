@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import "./css/Header.css";
 
-function Header () {
-    var isUser = 0;
-    if (isUser === 1) {
+function Header ({ loggedIn }) {
+    console.log("loggedIn = " + loggedIn);
+    if (loggedIn) {
         return (
             <header>
                 <div>

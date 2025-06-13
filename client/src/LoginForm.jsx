@@ -74,7 +74,6 @@ function LoginForm({ mode }) {
                 .then(({ status, data }) => {
                     if (status === 200) {
                         setLoginCheck(false);
-                        sessionStorage.setItem("token", data.token);
                         sessionStorage.setItem("username", data.username);
                         console.log("Login success: " + data.username);
                         navigate("/");

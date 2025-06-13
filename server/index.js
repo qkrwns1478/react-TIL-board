@@ -3,6 +3,13 @@ const app = express();
 const port = 3000;
 const db = require("./db.js");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = "SECRET";
+
+const generateToken = (payload) => {
+	const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+	return token;
+};
 
 app.get("/api/hello", (req, res) => {
     res.json({ message: "Hello from Express!" });
@@ -19,19 +26,22 @@ app.post("/api/log-in", (req, res) => {
     const { username, password } = req.body;
     db.query("SELECT * FROM USERINFO WHERE username = ?", [username])
         .then(([rows]) => {
+			/* 유효하지 않은 ID */
             if (rows.length === 0) {
                 return res.status(401).json({ error: "Invalid ID" });
             }
-
             const user = rows[0];
             const isPwCorrect = bcrypt.compareSync(password, user.password);
-            if (!isPwCorrect) {
+            /* 비밀번호가 틀린 경우 */
+			if (!isPwCorrect) {
                 return res.status(401).json({ error: "Invalid password" });
             }
-            return res.status(200).json({
-                username: user.username,
-                message: "Login success",
-            });
+			/* JWT 토큰 생성 */
+			const payload = { username: username };
+			const token = generateToken(payload);
+			return res.status(200)
+				.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: "lax", secure: false })
+				.json({ message: "Login success", username });
         })
         .catch((err) => {
             console.error(err);

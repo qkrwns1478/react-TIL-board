@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./Home";
 import LoginForm from "./LoginForm";
@@ -8,9 +9,15 @@ import Error from "./Error";
 import "./css/App.css";
 
 function App() {
+    const [loggedIn, setLoggedIn] = useState(false);
+    
+    useEffect(() => {
+        setLoggedIn(!!sessionStorage.getItem("token"));
+    }, []);
+
     return (
         <BrowserRouter>
-            <Header />
+            <Header loggedIn={loggedIn} />
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
