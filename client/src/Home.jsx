@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { increment } from "./feat/counterSlice";
+import munsikLogo from "./assets/munsik.png";
 import "./css/Home.css";
 
 function Home() {
-    const [count, setCount] = useState(0);
     const [msg, setMsg] = useState("");
+    const [animate, setAnimate] = useState(false);
+
+    const dispatch = useDispatch();
+    const count = useSelector((state) => state.counter.value);
 
     useEffect(() => {
         fetch("/api/hello")
@@ -13,19 +17,20 @@ function Home() {
             .then((data) => setMsg(data.message));
     }, []);
 
+    const handleClick = () => {
+        dispatch(increment());
+        setAnimate(true);
+        setTimeout(() => setAnimate(false), 400);
+    };
+
     return (
-        <>
-            <h1>Vite + React</h1>
+        <div>
+            <h1>Home</h1>
             <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img src={reactLogo} className="logo react" alt="React logo"/>
-                </a>
+                <img src={munsikLogo} className={animate ? "logo animate-grow-shrink" : "logo"} />
             </div>
             <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
+                <button onClick={handleClick}>
                     count is {count}
                 </button>
                 <p>
@@ -35,7 +40,7 @@ function Home() {
             <p className="read-the-docs">
                 {msg}
             </p>
-        </>
+        </div>
     );
 }
 
