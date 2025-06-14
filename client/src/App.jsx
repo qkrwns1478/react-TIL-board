@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "./feat/authSlice";
+import { setCredentials, clearAuth } from "./feat/authSlice";
 
 import Home from "./Home";
 import LoginForm from "./LoginForm";
@@ -14,15 +14,20 @@ import "./css/App.css";
 function App() {
     const dispatch = useDispatch();
     useEffect(() => {
-        fetch("/api/refresh-token", { method: "POST" })
-            .then(res => res.json())
-            .then(data => {
+        fetch("/api/refresh-token", { method: "POST", credentials: "include",})
+            .then((res) => res.json())
+            .then((data) => {
             if (data.accessToken) {
                 dispatch(setCredentials({
                     accessToken: data.accessToken,
                     username: data.username,
                 }));
+            } else {
+                dispatch(clearAuth());
             }
+        })
+        .catch(() => {
+            dispatch(clearAuth());
         });
     }, []);
 

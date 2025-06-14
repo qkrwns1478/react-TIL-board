@@ -1,22 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { clearAuth } from "./feat/authSlice";
+import { useSelector } from "react-redux";
+import useLogout from "./app/logout";
 import "./css/Header.css";
 
 function Header () {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const handleLogout = useLogout();
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-    const username = useSelector((state) => state.auth.username);
-
-    const handleLogout = (e) => {
-        e.preventDefault();
-        fetch("/api/logout", { method: "POST" })
-        .then(() => {
-            dispatch(clearAuth());
-            navigate("/");
-        });
-    };
+    // const username = useSelector((state) => state.auth.username);
 
     if (isLoggedIn) {
         return (
