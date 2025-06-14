@@ -10,6 +10,8 @@ function Home() {
 
     const dispatch = useDispatch();
     const count = useSelector((state) => state.counter.value);
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+    const username = useSelector((state) => state.auth.username);
 
     useEffect(() => {
         fetch("/api/hello")
@@ -40,6 +42,13 @@ function Home() {
             <p className="read-the-docs">
                 {msg}
             </p>
+            <div>
+                {isLoggedIn ? (
+                    <p>{username}님 안녕하세요!</p>
+                ) : (
+                    <p>로그인이 필요합니다.</p>
+                )}
+            </div>
         </div>
     );
 }

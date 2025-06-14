@@ -1,0 +1,26 @@
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    /* width: 400px;
+    height: 400px; */
+    gap: 10px;
+}
+
+.feature {
+    flex: 1 0 36%; /* 한 줄에 두 개씩 (48% + 48% + gap) */
+    height: 36%;
+    color: white;
+    border: 2px solid hsla(0, 0%, 100%, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px #0000001a;
+}
+
+#logoWhite {
+    width: 280px;
+    filter: drop-shadow(0 4px 6px #00000030);
+}

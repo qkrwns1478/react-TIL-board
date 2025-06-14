@@ -8,6 +8,7 @@ import Home from "./Home";
 import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
+import About from "./About";
 import Error from "./Error";
 import "./css/App.css";
 
@@ -39,6 +40,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<LoginForm mode="login" />} />
                     <Route path="/signup" element={<LoginForm mode="signup" />} />
+                    <Route path="/about" element={<About />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>
