@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { increment } from "./feat/counterSlice";
 import munsikLogo from "./assets/munsik.png";
 import "./css/Home.css";
 
 function Home() {
-    const [count, setCount] = useState(0);
     const [msg, setMsg] = useState("");
+    const [animate, setAnimate] = useState(false);
+
+    const dispatch = useDispatch();
+    const count = useSelector((state) => state.counter.value);
 
     useEffect(() => {
         fetch("/api/hello")
@@ -12,10 +17,8 @@ function Home() {
             .then((data) => setMsg(data.message));
     }, []);
 
-    const [animate, setAnimate] = useState(false);
-
     const handleClick = () => {
-        setCount((count) => count + 1);
+        dispatch(increment());
         setAnimate(true);
         setTimeout(() => setAnimate(false), 400);
     };

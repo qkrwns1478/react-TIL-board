@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "./feat/authSlice";
+
 import Home from "./Home";
 import LoginForm from "./LoginForm";
 import Header from "./Header";
@@ -9,15 +12,23 @@ import Error from "./Error";
 import "./css/App.css";
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    
+    const dispatch = useDispatch();
     useEffect(() => {
-        setLoggedIn(!!sessionStorage.getItem("token"));
+        fetch("/api/refresh-token", { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+            if (data.accessToken) {
+                dispatch(setCredentials({
+                    accessToken: data.accessToken,
+                    username: data.username,
+                }));
+            }
+        });
     }, []);
 
     return (
         <BrowserRouter>
-            <Header loggedIn={loggedIn} />
+            <Header />
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />

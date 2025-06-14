@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "./feat/authSlice";
 import "./css/LoginForm.css";
 
 function LoginForm({ mode }) {
     const isSignup = (mode === "signup");
     const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -13,9 +19,14 @@ function LoginForm({ mode }) {
     const [loginCheck, setLoginCheck] = useState(false);
     const [UsernameCheck, setUsernameCheck] = useState(false);
     const [pwCheck, setPwCheck] = useState(false);
-    const location = useLocation();
 
-    useEffect(() => { // uri 변경 시 라벨 숨김
+    useEffect(() => {
+        /* 로그인 된 상태에서 접근하면 invalid */
+        if (isLoggedIn) {
+            alert("잘못된 접근입니다.");
+            navigate("/");
+        }
+        /* uri 변경 시 라벨 숨김 */
         setLoginCheck(false);
         setUsernameCheck(false);
         setPwCheck(false);
@@ -73,9 +84,10 @@ function LoginForm({ mode }) {
                 )
                 .then(({ status, data }) => {
                     if (status === 200) {
-                        setLoginCheck(false);
-                        sessionStorage.setItem("username", data.username);
-                        console.log("Login success: " + data.username);
+                        dispatch(setCredentials({
+                            accessToken: data.accessToken,
+                            username: data.username,
+                        }));
                         navigate("/");
                     } else {
                         setLoginCheck(true);
