@@ -67,26 +67,15 @@ function LoginForm() {
                     {isAbout ? (
                         <>
                             <img src={whiteLogo} id="logoWhite" alt="logo" />
-                            <p>매일의 배움과 고민을 기록하고, 공유하고, 성장하세요</p>
-                            <h2>어떤 기능이 있나요?</h2>
-                            <div className="features">
-                                <div className="feature">
-                                    <h3>📝 Markdown 지원</h3>
-                                    <p>코드 블록과 서식을 활용해 <br />깔끔하게 정리하세요.</p>
-                                </div>
-                                <div className="feature">
-                                    <h3>🏷️ 태그 & 날짜</h3>
-                                    <p>태그를 사용한 카테고리 분류, <br />날짜 자동 태깅</p>
-                                </div>
-                                <div className="feature">
-                                    <h3>💬 댓글 기능</h3>
-                                    <p>다른 사용자에게 피드백과<br /> 응원도 받을 수 있어요.</p>
-                                </div>
-                                <div className="feature">
-                                    <h3>🔒 JWT 로그인</h3>
-                                    <p>안전하게 로그인하고 내 글을 관리하세요.</p>
-                                </div>
-                            </div>
+                            <h2>매일의 배움과 고민을 기록하고 공유하세요</h2>
+                            <p><b>TIL Board</b>는 개발자들이 하루 동안 배운 것, 겪은 시행착오,<br />
+                            그리고 깨달음을 쉽고 빠르게 기록하고 공유할 수 있는<br />
+                            <b>개발자 중심의 데일리 회고 플랫폼</b>입니다.</p>
+                            <h2>이런 분들께 추천합니다</h2>
+                            ✔ 매일 배운 내용을 기록하고 싶은 개발자<br />
+                            ✔ 혼자 공부하면서 느꼈던 시행착오를 정리하고 싶은 분<br />
+                            ✔ 다른 개발자의 회고에서 영감을 얻고 싶은 분<br />
+                            ✔ 마크다운으로 간단하게 기록하고 깔끔하게 공유하고 싶은 분<br />
                             <h2>기록은 곧 성장입니다</h2>
                             <span>개발자는 늘 배우고, 실수하고, 다시 일어섭니다.<br />
                             <strong>TIL Board</strong>는 그 과정을 함께합니다.<br />
