@@ -1,264 +1,163 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "./feat/authSlice";
+import { motion, AnimatePresence } from "framer-motion";
+import whiteLogo from "./assets/logo-white.png";
 import "./css/LoginForm.css";
 
-function LoginForm({ mode }) {
-    const isSignup = (mode === "signup");
-    const navigate = useNavigate();
+function LoginForm() {
     const location = useLocation();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
+    const path = location.pathname.replace('/', '') || 'about';
+    const isAbout = path === 'about';
+    const isSignup = path === 'signup';
 
     const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPw, setConfirmPw] = useState("");
-    const [loginCheck, setLoginCheck] = useState(false);
-    const [UsernameCheck, setUsernameCheck] = useState(false);
-    const [pwCheck, setPwCheck] = useState(false);
-    const [usernameTest, setUsernameTest] = useState(false);
-    const [pwTest, setPwTest] = useState(false);
-
-    const usernameForm = /^[a-zA-Z0-9-_]{5,20}$/;
-    const pwForm = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
-    const errorMessages = [
-        { condition: loginCheck, message: "ID 또는 비밀번호가 틀렸습니다." },
-        { condition: UsernameCheck, message: "이미 사용중인 ID입니다." },
-        { condition: pwCheck, message: "비밀번호가 일치하지 않습니다." },
-        { condition: usernameTest, message: "유효한 ID를 사용해주세요: 5~20자의 영문자, 숫자와 특수기호(_, -)" },
-        { condition: pwTest, message: "유효한 비밀번호를 사용해주세요: 8~16자의 영문 대/소문자, 숫자, 특수문자" },
-    ];
 
     useEffect(() => {
-        /* 로그인 된 상태에서 접근하면 invalid */
-        if (isLoggedIn) {
-            navigate("/");
-        }
-        /* uri 변경 시 라벨 숨김 */
-        setLoginCheck(false);
-        setUsernameCheck(false);
-        setPwCheck(false);
-        setUsernameTest(false);
-        setPwTest(false);
-    }, [location.pathname, isLoggedIn, navigate]);
+        if (!isAbout && isLoggedIn) navigate("/");
+    }, [location.pathname, isLoggedIn, navigate, isAbout]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isSignup) { // 회원가입
-            if (!usernameForm.test(username)) {
-                setUsernameCheck(false);
-                setPwCheck(false);
-                setUsernameTest(true);
-                setPwTest(false);
-                return;
-            }
-            if (!pwForm.test(password)) {
-                setUsernameCheck(false);
-                setPwCheck(false);
-                setUsernameTest(false);
-                setPwTest(true);
-                return;
-            }
+        if (isSignup) {
             fetch("/api/sign-up", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: name,
-                    username: username,
-                    password: password,
-                    confirmPw: confirmPw,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, username, password, confirmPw }),
             })
-                .then((response) =>
-                    response.json().then((data) => ({ status: response.status, data }))
-                )
-                .then(({ status, data }) => {
-                    if (status === 201) { // 회원가입 성공
-                        setUsernameCheck(false);
-                        setPwCheck(false);
-                        setUsernameTest(false);
-                        setPwTest(false);
+                .then((res) => res.json().then((data) => ({ status: res.status, data })))
+                .then(({ status }) => {
+                    if (status === 201) {
                         alert("회원가입이 완료되었습니다. 로그인 해주세요.");
                         navigate("/login");
-                    } else if (status == 400) { // 비밀번호 불일치
-                        setPwCheck(true);
-                        setUsernameCheck(false);
-                        setUsernameTest(false);
-                        setPwTest(false);
-                    } else if (status == 409) { // ID 중복
-                        setUsernameCheck(true);
-                        setPwCheck(false);
-                        setUsernameTest(false);
-                        setPwTest(false);
                     } else {
-                        setPwCheck(false);
-                        setUsernameCheck(false);
-                        setUsernameTest(false);
-                        setPwTest(false);
-                        alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+                        alert("회원가입 실패");
                     }
-                })
-        } else { // 로그인
+                });
+        } else {
             fetch("/api/log-in", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
             })
-                .then((response) =>
-                    response.json().then((data) => ({ status: response.status, data }))
-                )
+                .then((res) => res.json().then((data) => ({ status: res.status, data })))
                 .then(({ status, data }) => {
                     if (status === 200) {
-                        dispatch(setCredentials({
-                            accessToken: data.accessToken,
-                            username: data.username,
-                        }));
+                        dispatch(setCredentials({ accessToken: data.accessToken, username: data.username }));
                         navigate("/");
                     } else {
-                        setLoginCheck(true);
+                        alert("로그인 실패");
                     }
-                })
-                .catch((error) => {
-                    console.error("Error occurred on login:", error);
-                    setLoginCheck(true);
                 });
         }
     };
 
     return (
         <div className="login_body">
-            <motion.div layout className="login">
-                <motion.form
-                    layout
-                    className="login_form"
-                    onSubmit={handleSubmit}
-                >
-                    <h1 className="login_title">
-                        {isSignup ? "회원가입" : "로그인"}
-                    </h1>
-                    <div
-                        className="login_inputs"
-                        style={{ overflow: "hidden" }}
-                    >
+            <div className="login">
+                <motion.form layout className="login_form" onSubmit={handleSubmit}>
+                    {isAbout ? (
+                        <>
+                            <img src={whiteLogo} id="logoWhite" alt="logo" />
+                            <p>매일의 배움과 고민을 기록하고, 공유하고, 성장하세요</p>
+                            <h2>어떤 기능이 있나요?</h2>
+                            <div className="features">
+                                <div className="feature">
+                                    <h3>📝 Markdown 지원</h3>
+                                    <p>코드 블록과 서식을 활용해 <br />깔끔하게 정리하세요.</p>
+                                </div>
+                                <div className="feature">
+                                    <h3>🏷️ 태그 & 날짜</h3>
+                                    <p>태그를 사용한 카테고리 분류, <br />날짜 자동 태깅</p>
+                                </div>
+                                <div className="feature">
+                                    <h3>💬 댓글 기능</h3>
+                                    <p>다른 사용자에게 피드백과<br /> 응원도 받을 수 있어요.</p>
+                                </div>
+                                <div className="feature">
+                                    <h3>🔒 JWT 로그인</h3>
+                                    <p>안전하게 로그인하고 내 글을 관리하세요.</p>
+                                </div>
+                            </div>
+                            <h2>기록은 곧 성장입니다</h2>
+                            <span>개발자는 늘 배우고, 실수하고, 다시 일어섭니다.<br />
+                            <strong>TIL Board</strong>는 그 과정을 함께합니다.<br />
+                            오늘의 당신이 내일의 당신을 성장시킵니다.</span>
+                        </>
+                    ) : (
+                        <h1 className="login_title">{isSignup ? "회원가입" : "로그인"}</h1>
+                    )}
+
+                    <div className="login_inputs" style={{ overflow: "hidden" }}>
                         <AnimatePresence mode="wait">
                             {isSignup && (
-                                <motion.div
-                                    key="name"
-                                    layout="position"
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{
-                                        duration: 0.3,
-                                        ease: "easeInOut",
-                                    }}
-                                    className="login_box"
-                                >
-                                    <input
-                                        type="text"
-                                        placeholder="이름"
-                                        className="login_input"
-                                        required
-                                        value={name}
-                                        onChange={(e) =>
-                                            setName(e.target.value)
-                                        }
-                                    />
+                                <motion.div key="name" layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }} className="login_box">
+                                    <input type="text" placeholder="이름" className="login_input" required value={name} onChange={(e) => setName(e.target.value)} />
                                     <i className="ri-account-circle-line"></i>
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
-                        <motion.div layout className="login_box">
-                            <input
-                                type="text"
-                                placeholder="ID"
-                                className="login_input"
-                                required
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                            <i className="ri-user-fill"></i>
-                        </motion.div>
-
-                        <motion.div layout className="login_box">
-                            <input
-                                type="password"
-                                placeholder="비밀번호"
-                                className="login_input"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <i className="ri-lock-2-fill"></i>
-                        </motion.div>
+                        {!isAbout && (
+                            <>
+                                <motion.div layout className="login_box">
+                                    <input type="text" placeholder="ID" className="login_input" required value={username} onChange={(e) => setUsername(e.target.value)} />
+                                    <i className="ri-user-fill"></i>
+                                </motion.div>
+                                <motion.div layout className="login_box">
+                                    <input type="password" placeholder="비밀번호" className="login_input" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    <i className="ri-lock-2-fill"></i>
+                                </motion.div>
+                            </>
+                        )}
 
                         <AnimatePresence mode="wait">
                             {isSignup && (
-                                <motion.div
-                                    key="confirmPw"
-                                    layout="position"
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{
-                                        duration: 0.3,
-                                        ease: "easeInOut",
-                                    }}
-                                    className="login_box"
-                                >
-                                    <input
-                                        type="password"
-                                        placeholder="비밀번호 재입력"
-                                        className="login_input"
-                                        required
-                                        value={confirmPw}
-                                        onChange={(e) =>
-                                            setConfirmPw(e.target.value)
-                                        }
-                                    />
+                                <motion.div key="confirmPw" layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }} className="login_box">
+                                    <input type="password" placeholder="비밀번호 재입력" className="login_input" required value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} />
                                     <i className="ri-lock-2-fill"></i>
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
 
-                    <>
-                        {errorMessages.map(
-                        ({ condition, message }, idx) =>
-                            condition && <label key={idx}>{message}</label>
-                        )}
-                    </>
-
-                    <button type="submit" className="login_button">
-                        {isSignup ? "회원가입" : "로그인"}
+                    <button
+                        type={isAbout ? "button" : "submit"}
+                        className="login_button"
+                        onClick={() => {
+                            if (isAbout) {
+                                navigate(isLoggedIn ? "/" : "/signup");
+                            }
+                        }}
+                    >
+                        {isAbout
+                            ? isLoggedIn
+                                ? "오늘의 TIL 쓰러가기"
+                                : "무료로 TIL 써보기"
+                            : isSignup
+                            ? "회원가입"
+                            : "로그인"}
                     </button>
 
-                    <div className="login_register">
-                        {isSignup ? (
-                            <>
-                                이미 계정이 있으신가요?{" "}
-                                <Link to="/login">로그인</Link>
-                            </>
-                        ) : (
-                            <>
-                                아직 회원이 아니신가요?{" "}
-                                <Link to="/signup">회원가입</Link>
-                            </>
-                        )}
-                    </div>
+                    {!isAbout && (
+                        <div className="login_register">
+                            {isSignup ? (
+                                <>이미 계정이 있으신가요? <Link to="/login">로그인</Link></>
+                            ) : (
+                                <>아직 회원이 아니신가요? <Link to="/signup">회원가입</Link></>
+                            )}
+                        </div>
+                    )}
                 </motion.form>
-            </motion.div>
+            </div>
         </div>
     );
 }
