@@ -20,7 +20,7 @@ function Header () {
                     <Link to="/about">About</Link> |{" "}
                     {isLoggedIn ? (
                         <>
-                            마이페이지 | <Link onClick={handleLogout}>로그아웃</Link>
+                            <Link to="/mypage">마이페이지</Link> | <Link onClick={handleLogout}>로그아웃</Link>
                         </>
                     ) : (
                         <>

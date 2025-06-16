@@ -126,3 +126,7 @@ app.use("/api/posts", postsRouter);
 /* 댓글 기능 */
 const commentRoutes = require("./routes/comments");
 app.use("/api/posts", commentRoutes);
+
+/* 마이페이지 기능 */
+const mypageRoutes = require("./routes/mypage");
+app.use("/api/mypage", mypageRoutes);

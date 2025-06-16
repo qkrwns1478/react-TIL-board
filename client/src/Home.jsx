@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import "./css/Home.css";
 
 function Home() {
@@ -8,6 +8,7 @@ function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
     const page = parseInt(searchParams.get("page")) || 1;
     const tag = searchParams.get("tag");
+    const navigate = useNavigate();
 
     const fetchPosts = async (pageNum) => {
         const query = tag ? `?tag=${tag}&page=${pageNum}` : `?page=${pageNum}`;
@@ -178,19 +179,13 @@ function Home() {
                 </thead>
                 <tbody>
                     {posts.map((post) => (
-                        <tr key={post.id}>
+                        <tr
+                            key={post.id}
+                            onClick={() => navigate(`/posts/${post.id}`)}
+                            style={{ cursor: "pointer" }}
+                        >
                             <td>{post.id}</td>
-                            <td>
-                                <Link
-                                    to={`/posts/${post.id}`}
-                                    style={{
-                                        color: "#007bff",
-                                        textDecoration: "none",
-                                    }}
-                                >
-                                    {post.title}
-                                </Link>
-                            </td>
+                            <td>{post.title}</td>
                             <td>{post.author}</td>
                             <td>
                                 {new Date(post.created_at).toLocaleString()}
