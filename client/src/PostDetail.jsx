@@ -1,0 +1,201 @@
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+const PostDetail = () => {
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const [post, setPost] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [commentInput, setCommentInput] = useState("");
+
+    const authorId = useSelector((state) => state.auth.id);
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editingContent, setEditingContent] = useState("");
+
+    useEffect(() => {
+        fetch(`/api/posts/${id}`)
+            .then((res) => res.json())
+            .then((data) => setPost(data));
+        fetch(`/api/posts/${id}/comments`)
+            .then((res) => res.json())
+            .then((data) => setComments(data));
+    }, [id]);
+
+    if (!post) return <div>로딩 중…</div>;
+    const isAuthor = post.author_id === authorId;
+
+    const handleCommentSubmit = async () => {
+        if (!commentInput.trim()) return;
+
+        await fetch(`/api/posts/${id}/comments`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                author_id: authorId,
+                content: commentInput,
+            }),
+        });
+
+        setCommentInput("");
+        // 댓글 새로고침
+        const res = await fetch(`/api/posts/${id}/comments`);
+        const data = await res.json();
+        setComments(data);
+    };
+
+    const startEdit = (comment) => {
+        setEditingCommentId(comment.id);
+        setEditingContent(comment.content);
+    };
+
+    const handleEditSave = async (commentId) => {
+        await fetch(`/api/posts/comments/${commentId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                content: editingContent,
+                author_id: authorId,
+            }),
+        });
+
+        setEditingCommentId(null);
+        refreshComments();
+    };
+
+    const handleDelete = async (commentId) => {
+        const ok = window.confirm("정말 삭제하시겠습니까?");
+        if (!ok) return;
+
+        await fetch(`/api/posts/comments/${commentId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ author_id: authorId }),
+        });
+
+        refreshComments();
+    };
+
+    const refreshComments = async () => {
+        const res = await fetch(
+            `/api/posts/${id}/comments`
+        );
+        const data = await res.json();
+        setComments(data);
+    };
+
+    const handleDeletePost = async () => {
+        const ok = window.confirm("정말 게시글을 삭제하시겠습니까?");
+        if (!ok) return;
+
+        await fetch(`/api/posts/${post.id}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ author_id: authorId }),
+        });
+        navigate("/");
+    };
+
+    return (
+        <div className="board-wrapper">
+            <h2>{post.title}</h2>
+            <p>
+                <strong>작성자:</strong> {post.author} |{" "}
+                <strong>작성일:</strong>{" "}
+                {new Date(post.created_at).toLocaleString()}
+            </p>
+            {isAuthor && (
+                <div style={{ marginTop: "1rem" }}>
+                    <Link to={`/posts/${post.id}/edit`}>
+                    <button>게시글 수정</button>
+                    </Link>
+                    <button onClick={handleDeletePost}>게시글 삭제</button>
+                </div>
+            )}
+            <hr />
+            <p style={{ whiteSpace: "pre-line" }}>{post.content}</p>
+            <Link to="/" style={{ marginTop: "20px", display: "inline-block" }}>
+                ← 목록으로 돌아가기
+            </Link>
+            <hr />
+            <h3>댓글</h3>
+            <ul style={{ paddingLeft: "1rem" }}>
+                {comments.map((c) => (
+                    <li key={c.id} style={{ marginBottom: "1rem" }}>
+                        <strong>{c.author}</strong>:
+                        {editingCommentId === c.id ? (
+                            <>
+                                <textarea
+                                    value={editingContent}
+                                    onChange={(e) =>
+                                        setEditingContent(e.target.value)
+                                    }
+                                    style={{ width: "100%", marginTop: "4px" }}
+                                />
+                                <div style={{ marginTop: "4px" }}>
+                                    <button
+                                        onClick={() => handleEditSave(c.id)}
+                                    >
+                                        저장
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setEditingCommentId(null)
+                                        }
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <div>
+                                <p style={{ margin: "4px 0" }}>{c.content}</p>
+                                <small>
+                                    {new Date(c.created_at).toLocaleString()}
+                                </small>
+                                {c.author_id === authorId && (
+                                    <div style={{ marginTop: "4px" }}>
+                                        <button onClick={() => startEdit(c)}>
+                                            수정
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(c.id)}
+                                        >
+                                            삭제
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </li>
+                ))}
+            </ul>
+
+            <div style={{ marginTop: "1rem" }}>
+                {authorId ? (
+                    <>
+                        <textarea
+                            value={commentInput}
+                            onChange={(e) => setCommentInput(e.target.value)}
+                            placeholder="댓글을 입력하세요"
+                            style={{ width: "100%", height: "60px" }}
+                        />
+                        <button
+                            onClick={handleCommentSubmit}
+                            style={{ marginTop: "0.5rem", padding: "6px 12px" }}
+                            className="cta-btn"
+                        >
+                            댓글 등록
+                        </button>
+                    </>
+                ) : (
+                    <p>댓글을 작성하려면 로그인해주세요.</p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default PostDetail;

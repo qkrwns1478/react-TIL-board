@@ -8,6 +8,7 @@ import Home from "./Home";
 import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
+import PostDetail from "./Postdetail";
 import Error from "./Error";
 import "./css/App.css";
 
@@ -21,6 +22,8 @@ function App() {
                 dispatch(setCredentials({
                     accessToken: data.accessToken,
                     username: data.username,
+                    id: data.id,
+                    name: data.name,
                 }));
             } else {
                 dispatch(clearAuth());
@@ -40,6 +43,7 @@ function App() {
                     <Route path="/about" element={<LoginForm />} />
                     <Route path="/signup" element={<LoginForm />} />
                     <Route path="/login" element={<LoginForm />} />
+                    <Route path="/posts/:id" element={<PostDetail />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>

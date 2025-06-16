@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "./css/Home.css";
 
@@ -106,7 +106,11 @@ function Home() {
                     {posts.map((post) => (
                         <tr key={post.id}>
                             <td>{post.id}</td>
-                            <td>{post.title}</td>
+                            <td>
+                                <Link to={`/posts/${post.id}`} style={{ color: "#007bff", textDecoration: "none" }}>
+                                    {post.title}
+                                </Link>
+                            </td>
                             <td>{post.author}</td>
                             <td>
                                 {new Date(post.created_at).toLocaleString()}

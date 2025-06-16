@@ -51,7 +51,13 @@ function LoginForm() {
                 .then((res) => res.json().then((data) => ({ status: res.status, data })))
                 .then(({ status, data }) => {
                     if (status === 200) {
-                        dispatch(setCredentials({ accessToken: data.accessToken, username: data.username }));
+                        console.log("로그인 응답:", data);
+                        dispatch(setCredentials({
+                            accessToken: data.accessToken,
+                            username: data.username,
+                            name: data.name,
+                            id: data.id,
+                        }));
                         navigate("/");
                     } else {
                         alert("로그인 실패");
