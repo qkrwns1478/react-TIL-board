@@ -15,6 +15,7 @@ app.use(cors({
     origin: "http://localhost:5173",
     credentials: true,
 }));
+const postsRouter = require("./routes/posts");
 
 app.get("/api/hello", (req, res) => {
     res.json({ message: "Hello from Express!" });
@@ -118,3 +119,6 @@ app.post("/api/logout", (req, res) => {
     res.clearCookie("refreshToken");
     res.status(200).json({ message: "Logged out" });
 });
+
+/* 게시판 조회 */
+app.use("/api/posts", postsRouter);
