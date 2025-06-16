@@ -119,7 +119,7 @@ app.post("/api/logout", (req, res) => {
     res.status(200).json({ message: "Logged out" });
 });
 
-/* 게시판 조회 */
+/* 게시판 기능 */
 const postsRouter = require("./routes/posts");
 app.use("/api/posts", postsRouter);
 

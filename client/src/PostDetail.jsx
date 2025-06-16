@@ -87,7 +87,7 @@ const PostDetail = () => {
     };
 
     const handleDeletePost = async () => {
-        const ok = window.confirm("정말 게시글을 삭제하시겠습니까?");
+        const ok = window.confirm("정말 게시글을 삭제하시겠습니까? 삭제 후에는 복원할 수 없습니다.");
         if (!ok) return;
 
         await fetch(`/api/posts/${post.id}`, {

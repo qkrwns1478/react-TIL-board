@@ -129,7 +129,7 @@ function LoginForm() {
                         className="login_button"
                         onClick={() => {
                             if (isAbout) {
-                                navigate(isLoggedIn ? "/" : "/signup");
+                                navigate(isLoggedIn ? "/posts/new" : "/signup");
                             }
                         }}
                     >

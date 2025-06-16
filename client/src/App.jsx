@@ -9,6 +9,8 @@ import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
 import PostDetail from "./Postdetail";
+import PostCreate from "./PostCreate";
+import PostEdit from "./PostEdit"
 import Error from "./Error";
 import "./css/App.css";
 
@@ -44,6 +46,8 @@ function App() {
                     <Route path="/signup" element={<LoginForm />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/posts/:id" element={<PostDetail />} />
+                    <Route path="/posts/new" element={<PostCreate />} />
+                    <Route path="/posts/:id/edit" element={<PostEdit />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>
