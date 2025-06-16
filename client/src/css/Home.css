@@ -11,7 +11,7 @@
 }
 
 .board-wrapper {
-  max-width: 800px;
+  max-width: 820px;
   margin: 50px auto;
   font-family: "Segoe UI", sans-serif;
 }
@@ -81,4 +81,17 @@
 
 textarea {
   resize: none;
+}
+
+.tool_btn {
+  margin-right: 6px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.tool_btn:hover {
+  background-color: #e6e6e6;
 }

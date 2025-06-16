@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const PostDetail = () => {
     const navigate = useNavigate();
@@ -79,15 +83,15 @@ const PostDetail = () => {
     };
 
     const refreshComments = async () => {
-        const res = await fetch(
-            `/api/posts/${id}/comments`
-        );
+        const res = await fetch(`/api/posts/${id}/comments`);
         const data = await res.json();
         setComments(data);
     };
 
     const handleDeletePost = async () => {
-        const ok = window.confirm("정말 게시글을 삭제하시겠습니까? 삭제 후에는 복원할 수 없습니다.");
+        const ok = window.confirm(
+            "정말 게시글을 삭제하시겠습니까? 삭제 후에는 복원할 수 없습니다."
+        );
         if (!ok) return;
 
         await fetch(`/api/posts/${post.id}`, {
@@ -109,13 +113,51 @@ const PostDetail = () => {
             {isAuthor && (
                 <div style={{ marginTop: "1rem" }}>
                     <Link to={`/posts/${post.id}/edit`}>
-                    <button>게시글 수정</button>
+                        <button>게시글 수정</button>
                     </Link>
                     <button onClick={handleDeletePost}>게시글 삭제</button>
                 </div>
             )}
             <hr />
-            <p style={{ whiteSpace: "pre-line" }}>{post.content}</p>
+            <div
+                style={{
+                    width: "100%",
+                    minHeight: "400px",
+                    padding: "12px",
+                    background: "#f9f9f9",
+                    border: "1px solid #ccc",
+                    marginBottom: "1rem",
+                    textAlign: "left",
+                }}
+            >
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        code({ node, inline, className, children, ...props }) {
+                            const match = /language-(\w+)/.exec(
+                                className || ""
+                            );
+                            return !inline && match ? (
+                                <SyntaxHighlighter
+                                    style={oneDark}
+                                    language={match[1]}
+                                    PreTag="div"
+                                    {...props}
+                                >
+                                    {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                            ) : (
+                                <code className={className} {...props}>
+                                    {children}
+                                </code>
+                            );
+                        },
+                    }}
+                >
+                    {post.content}
+                </ReactMarkdown>
+            </div>
+
             <Link to="/" style={{ marginTop: "20px", display: "inline-block" }}>
                 ← 목록으로 돌아가기
             </Link>

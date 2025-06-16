@@ -1,12 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import MarkdownEditor from "./MarkdownEditor";
 
 const PostCreate = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [activeTab, setActiveTab] = useState("write");
     const navigate = useNavigate();
     const authorId = useSelector((state) => state.auth.id);
+
+    useEffect(() => {
+        if (!authorId) {
+            alert("로그인 후 이용해주세요.");
+            navigate("/login");
+        }
+    }, [authorId, navigate]);
 
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) {
@@ -36,22 +45,15 @@ const PostCreate = () => {
 
     return (
         <div className="board-wrapper">
-            <h2>새 TIL 작성</h2>
             <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목"
                 style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
             />
-            <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="내용"
-                rows="10"
-                style={{ width: "100%", padding: "8px" }}
-            />
+            <MarkdownEditor content={content} setContent={setContent} />
             <div style={{ marginTop: "1rem" }}>
-                <button onClick={handleSubmit}>작성 완료</button>
+                <button onClick={handleSubmit}>저장</button>
                 <button
                     onClick={() => navigate("/")}
                     style={{ marginLeft: "8px" }}

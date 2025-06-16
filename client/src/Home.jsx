@@ -9,10 +9,6 @@ function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
     const page = parseInt(searchParams.get("page")) || 1;
 
-    // const dispatch = useDispatch();
-    // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-    // const username = useSelector((state) => state.auth.username);
-
     const fetchPosts = async (pageNum) => {
         const res = await fetch(`/api/posts?page=${pageNum}`);
         const data = await res.json();
@@ -38,7 +34,7 @@ function Home() {
         );
         // 1번 페이지
         buttons.push(
-            <button key={1} onClick={() => fetchPosts(1)} className={current === 1 ? "active" : ""}>
+            <button key={1} onClick={() => fetchPosts(1)} className={current === 1 ? "active cta-btn" : "cta-btn"}>
                 1
             </button>
         );
@@ -53,7 +49,7 @@ function Home() {
                     <button
                         key={i}
                         onClick={() => fetchPosts(i)}
-                        className={current === i ? "active" : ""}
+                        className={current === i ? "active cta-btn" : "cta-btn"}
                     >
                         {i}
                     </button>
@@ -78,7 +74,7 @@ function Home() {
             key="next"
             onClick={() => fetchPosts(current + 1)}
             disabled={current === maxPage}
-            className={current === maxPage ? "disabled" : ""}
+            className={current === maxPage ? "disabled" : "cta-btn"}
             >
             다음 ▶︎
             </button>
@@ -93,6 +89,9 @@ function Home() {
     return (
         <div className="board-wrapper">
             <h1 className="board-title">TIL Board</h1>
+            <Link to="/posts/new">
+                <button className="cta-btn">작성하기</button>
+            </Link>
             <table className="board-table">
                 <thead>
                     <tr>

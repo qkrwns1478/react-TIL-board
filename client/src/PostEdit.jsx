@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import MarkdownEditor from "./MarkdownEditor";
 
 const PostEdit = () => {
     const { id } = useParams();
@@ -15,7 +16,7 @@ const PostEdit = () => {
             .then((res) => res.json())
             .then((data) => {
                 if (data.author_id !== authorId) {
-                    alert("작성자만 수정할 수 있습니다.");
+                    alert("수정 권한이 없습니다.");
                     navigate("/");
                 } else {
                     setTitle(data.title);
@@ -26,10 +27,11 @@ const PostEdit = () => {
 
     const handleUpdate = async () => {
         if (!title.trim() || !content.trim()) {
-            alert("제목과 내용을 입력하세요.");
+            alert("제목과 내용을 모두 입력하세요.");
             return;
         }
-        await fetch(`/api/posts/${id}`, {
+
+        const res = await fetch(`/api/posts/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -38,29 +40,31 @@ const PostEdit = () => {
                 author_id: authorId,
             }),
         });
+
+        if (!res.ok) {
+            const err = await res.json();
+            alert("수정 실패: " + err.error);
+            return;
+        }
+
         alert("게시글이 수정되었습니다.");
         navigate(`/posts/${id}`);
     };
 
     return (
         <div className="board-wrapper">
-            <h2>게시글 수정</h2>
             <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목"
                 style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
             />
-            <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="내용"
-                rows="10"
-                style={{ width: "100%", padding: "8px" }}
-            />
+            <MarkdownEditor content={content} setContent={setContent} />
             <div style={{ marginTop: "1rem" }}>
-                <button onClick={handleUpdate}>저장</button>
-                <button onClick={() => navigate(`/posts/${id}`)}>취소</button>
+                <button onClick={handleUpdate}>수정 완료</button>
+                <button onClick={() => navigate(`/posts/${id}`)} style={{ marginLeft: "8px" }}>
+                    취소
+                </button>
             </div>
         </div>
     );
