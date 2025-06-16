@@ -8,18 +8,8 @@ const PostCreate = () => {
     const [content, setContent] = useState("");
     const navigate = useNavigate();
 
-    const [checkingLogin, setCheckingLogin] = useState(true);
     const authorId = useSelector((state) => state.auth.id);
-
-    // useEffect(() => {
-    //     if (checkingLogin && authorId === null) return;
-    //     if (!authorId) {
-    //         alert("로그인 후 이용해주세요.");
-    //         navigate("/login");
-    //         return;
-    //     }
-    //     setCheckingLogin(false);
-    // }, [authorId, checkingLogin, navigate]);
+    const [tags, setTags] = useState("");
 
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) {
@@ -34,6 +24,7 @@ const PostCreate = () => {
                 title,
                 content,
                 author_id: authorId,
+                tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
             }),
         });
 
@@ -56,6 +47,13 @@ const PostCreate = () => {
                 style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
             />
             <MarkdownEditor content={content} setContent={setContent} />
+            <input
+                type="text"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="태그 입력 (쉼표로 구분)"
+                style={{ width: "100%", padding: "8px" }}
+            />
             <div style={{ marginTop: "1rem" }}>
                 <button onClick={handleSubmit}>저장</button>
                 <button

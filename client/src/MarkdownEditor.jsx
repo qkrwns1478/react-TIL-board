@@ -33,6 +33,20 @@ const MarkdownEditor = ({ content, setContent }) => {
         }, 0);
     };
 
+    const buttonStyle = {
+        background: "white",
+        border: "none",
+        padding: "8px 12px",
+        fontSize: "14px",
+        cursor: "pointer",
+    };
+
+    const dividerStyle = {
+        width: "1px",
+        backgroundColor: "#999",
+        height: "auto",
+    };
+
     return (
         <div className="markdown-editor">
             <div
@@ -74,22 +88,41 @@ const MarkdownEditor = ({ content, setContent }) => {
                     </button>
                 </div>
                 {activeTab === "write" && (
-                    <div>
-                        <button onClick={() => insertMarkdown("**", "**")}>
+                    <div
+                        style={{
+                            display: "inline-flex",
+                            border: "1px solid #cccccc",
+                            borderRadius: "1rem",
+                            overflow: "hidden",
+                        }}
+                    >
+                        <button
+                            style={buttonStyle}
+                            onClick={() => insertMarkdown("**", "**")}
+                        >
                             굵게
                         </button>
-                        <button onClick={() => insertMarkdown("*", "*")}>
+                        <div style={dividerStyle} />
+                        <button style={buttonStyle} onClick={() => insertMarkdown("*", "*")}>
                             기울임
                         </button>
+                        <div style={dividerStyle} />
                         <button
+                            style={buttonStyle}
                             onClick={() => insertMarkdown("```\n", "\n```")}
                         >
                             코드블럭
                         </button>
-                        <button onClick={() => insertMarkdown("# ", "")}>
+                        <div style={dividerStyle} />
+                        <button
+                            style={buttonStyle}
+                            onClick={() => insertMarkdown("# ", "")}
+                        >
                             제목
                         </button>
+                        <div style={dividerStyle} />
                         <button
+                            style={buttonStyle}
                             onClick={() => insertMarkdown("[텍스트]", "(링크)")}
                         >
                             링크
@@ -158,13 +191,6 @@ const MarkdownEditor = ({ content, setContent }) => {
                     </ReactMarkdown>
                 </div>
             )}
-        <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="태그 입력 (쉼표로 구분)"
-            style={{ width: "100%", padding: "8px" }}
-        />
         </div>
     );
 };

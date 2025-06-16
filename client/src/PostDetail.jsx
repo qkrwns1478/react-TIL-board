@@ -12,6 +12,7 @@ const PostDetail = () => {
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
     const [commentInput, setCommentInput] = useState("");
+    const [tags, setTags] = useState([]);
 
     const authorId = useSelector((state) => state.auth.id);
     const [editingCommentId, setEditingCommentId] = useState(null);
@@ -24,6 +25,9 @@ const PostDetail = () => {
         fetch(`/api/posts/${id}/comments`)
             .then((res) => res.json())
             .then((data) => setComments(data));
+        fetch(`/api/posts/${id}/tags`)
+            .then(res => res.json())
+            .then(setTags);
     }, [id]);
 
     if (!post) return <div>로딩 중…</div>;
@@ -103,23 +107,25 @@ const PostDetail = () => {
     };
 
     return (
-        <>
-        <div style={{ height: "80px" }}></div>
-        <div className="board-wrapper">
-            <h2>{post.title}</h2>
-            <p className="read-the-docs">
-                <strong>작성자:</strong> {post.author} |{" "}
-                <strong>작성일:</strong>{" "}
-                {new Date(post.created_at).toLocaleString()}
-            </p>
-            {isAuthor && (
-                <div style={{ marginTop: "1rem" }}>
-                    <Link to={`/posts/${post.id}/edit`}>
-                        <button>게시글 수정</button>
-                    </Link>
-                    <button onClick={handleDeletePost}>게시글 삭제</button>
+        <div className="board-wrapper" style={{ paddingTop: "80px", paddingBottom: "80px" }}>
+            <div style={{ textAlign: "left" }}>
+                <Link to="/"><small>← 목록으로 돌아가기</small></Link>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <h2 style={{ marginBottom: 0 }}>{post.title}</h2>
+                    <p className="read-the-docs" style={{ marginTop: "4px", fontSize: "0.9rem" }}>
+                        <strong>작성자:</strong> {post.author} | <strong>작성일:</strong> {new Date(post.created_at).toLocaleString()}
+                    </p>
                 </div>
-            )}
+                {isAuthor && (
+                    <div>
+                        <Link to={`/posts/${post.id}/edit`}><button>게시글 수정</button></Link>
+                        <button onClick={handleDeletePost} style={{ marginLeft: "0.5rem" }}>게시글 삭제</button>
+                    </div>
+                )}
+            </div>
+
             <div
                 style={{
                     width: "100%",
@@ -127,6 +133,7 @@ const PostDetail = () => {
                     padding: "12px",
                     background: "#f9f9f9",
                     border: "1px solid #ccc",
+                    marginTop: "1rem",
                     marginBottom: "1rem",
                     textAlign: "left",
                 }}
@@ -135,9 +142,7 @@ const PostDetail = () => {
                     remarkPlugins={[remarkGfm]}
                     components={{
                         code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(
-                                className || ""
-                            );
+                            const match = /language-(\w+)/.exec(className || "");
                             return !inline && match ? (
                                 <SyntaxHighlighter
                                     style={oneDark}
@@ -159,75 +164,77 @@ const PostDetail = () => {
                 </ReactMarkdown>
             </div>
 
-            <Link to="/" style={{ marginTop: "20px", display: "inline-block" }}>
-                ← 목록으로 돌아가기
-            </Link>
+            {/* 태그 표시 */}
+            {tags.length > 0 && (
+                <div style={{ marginBottom: "1rem", display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
+                    {tags.map((tag) => (
+                        <span
+                            key={tag.id}
+                            style={{
+                                display: "inline-block",
+                                marginRight: "8px",
+                                padding: "4px 8px",
+                                backgroundColor: "#f0f0f0",
+                                borderRadius: "12px",
+                                fontSize: "0.9rem",
+                            }}
+                        >
+                            <Link to={`/?tag=${tag.name}`} style={{ textDecoration: "none", color: "#007bff" }}>
+                                #{tag.name}
+                            </Link>
+                        </span>
+                    ))}
+                </div>
+            )}
+
             <hr />
-            <h3>댓글</h3>
-            <ul style={{ paddingLeft: "1rem" }}>
+            <h3 style = {{ textAlign: "left" }}>댓글</h3>
+            <ul style={{ paddingLeft: 0, listStyle: "none" }}>
                 {comments.map((c) => (
-                    <li key={c.id} style={{ marginBottom: "1rem" }}>
-                        <strong>{c.author}</strong>:
+                    <li key={c.id} style={{ marginBottom: "1rem", background: "#fafafa", padding: "12px", border:"1px solid #cccccc", borderRadius: "8px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <strong>{c.author}</strong>
+                            <small className="read-the-docs">{new Date(c.created_at).toLocaleString()}</small>
+                        </div>
                         {editingCommentId === c.id ? (
                             <>
                                 <textarea
                                     value={editingContent}
-                                    onChange={(e) =>
-                                        setEditingContent(e.target.value)
-                                    }
-                                    style={{ width: "100%", marginTop: "4px" }}
+                                    onChange={(e) => setEditingContent(e.target.value)}
+                                    style={{ width: "100%", marginTop: "6px" }}
                                 />
-                                <div style={{ marginTop: "4px" }}>
-                                    <button
-                                        onClick={() => handleEditSave(c.id)}
-                                    >
-                                        저장
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            setEditingCommentId(null)
-                                        }
-                                    >
-                                        취소
-                                    </button>
+                                <div style={{ textAlign: "right" }}>
+                                    <button onClick={() => handleEditSave(c.id)}>저장</button>
+                                    <button onClick={() => setEditingCommentId(null)}>취소</button>
                                 </div>
                             </>
                         ) : (
-                            <div>
-                                <p style={{ margin: "4px 0" }}>{c.content}</p>
-                                <small>
-                                    {new Date(c.created_at).toLocaleString()}
-                                </small>
+                            <>
+                                <p style={{ margin: "6px 0", textAlign: "left" }}>{c.content}</p>
                                 {c.author_id === authorId && (
-                                    <div style={{ marginTop: "4px" }}>
-                                        <button onClick={() => startEdit(c)}>
-                                            수정
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(c.id)}
-                                        >
-                                            삭제
-                                        </button>
+                                    <div style={{ textAlign: "right" }}>
+                                        <button onClick={() => startEdit(c)}>수정</button>
+                                        <button onClick={() => handleDelete(c.id)} style={{ marginLeft: "8px" }}>삭제</button>
                                     </div>
                                 )}
-                            </div>
+                            </>
                         )}
                     </li>
                 ))}
             </ul>
 
-            <div style={{ marginTop: "1rem" }}>
+            <div style={{ marginTop: "1rem", display: "flex", alignItems: "flex-start", gap: "12px" }}>
                 {authorId ? (
                     <>
                         <textarea
                             value={commentInput}
                             onChange={(e) => setCommentInput(e.target.value)}
                             placeholder="댓글을 입력하세요"
-                            style={{ width: "100%", height: "60px" }}
+                            style={{ flex: 1, height: "60px" }}
                         />
                         <button
                             onClick={handleCommentSubmit}
-                            style={{ marginTop: "0.5rem", padding: "6px 12px" }}
+                            style={{ padding: "8px 16px", height: "60px" }}
                             className="cta-btn"
                         >
                             댓글 등록
@@ -238,8 +245,6 @@ const PostDetail = () => {
                 )}
             </div>
         </div>
-        <div style={{ height: "80px" }}></div>
-        </>
     );
 };
 

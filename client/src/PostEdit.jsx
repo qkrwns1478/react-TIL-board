@@ -27,6 +27,13 @@ const PostEdit = () => {
                 }
             });
         setCheckingLogin(false);
+        
+        fetch(`/api/posts/${id}/tags`)
+            .then((res) => res.json())
+            .then((data) => {
+            const tagNames = data.map((tag) => tag.name).join(", ");
+            setTags(tagNames);
+        });
     }, [id, authorId, checkingLogin, navigate]);
 
     const handleUpdate = async () => {
@@ -42,7 +49,7 @@ const PostEdit = () => {
                 title,
                 content,
                 author_id: authorId,
-                tags: tags.split(",").map(t => t.trim()).filter(Boolean)
+                tags: tags.split(",").map((tag) => tag.trim()).filter(Boolean),
             }),
         });
 
@@ -67,6 +74,13 @@ const PostEdit = () => {
                 style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
             />
             <MarkdownEditor content={content} setContent={setContent} />
+            <input
+                type="text"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="태그 입력 (쉼표로 구분)"
+                style={{ width: "100%", padding: "8px" }}
+            />
             <div style={{ marginTop: "1rem" }}>
                 <button onClick={handleUpdate}>수정 완료</button>
                 <button onClick={() => navigate(`/posts/${id}`)} style={{ marginLeft: "8px" }}>
