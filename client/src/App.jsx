@@ -5,9 +5,13 @@ import { useDispatch } from "react-redux";
 import { setCredentials, clearAuth } from "./feat/authSlice";
 
 import Home from "./Home";
+import ProtectedRoute from "./ProtectedRoute";
 import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
+import PostDetail from "./Postdetail";
+import PostCreate from "./PostCreate";
+import PostEdit from "./PostEdit"
 import Error from "./Error";
 import "./css/App.css";
 
@@ -21,6 +25,8 @@ function App() {
                 dispatch(setCredentials({
                     accessToken: data.accessToken,
                     username: data.username,
+                    id: data.id,
+                    name: data.name,
                 }));
             } else {
                 dispatch(clearAuth());
@@ -37,8 +43,14 @@ function App() {
             <main>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<LoginForm mode="login" />} />
-                    <Route path="/signup" element={<LoginForm mode="signup" />} />
+                    <Route path="/about" element={<LoginForm />} />
+                    <Route path="/signup" element={<LoginForm />} />
+                    <Route path="/login" element={<LoginForm />} />
+                    <Route path="/posts/:id" element={<PostDetail />} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/posts/new" element={<PostCreate />} />
+                    </Route>
+                    <Route path="/posts/:id/edit" element={<PostEdit />} />
                     <Route path="*" element={<Error />} />
                 </Routes>
             </main>

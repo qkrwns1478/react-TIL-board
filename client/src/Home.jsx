@@ -1,45 +1,205 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { increment } from "./feat/counterSlice";
-import munsikLogo from "./assets/munsik.png";
+import { useSearchParams, Link } from "react-router-dom";
 import "./css/Home.css";
 
 function Home() {
-    const [msg, setMsg] = useState("");
-    const [animate, setAnimate] = useState(false);
+    const [posts, setPosts] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = parseInt(searchParams.get("page")) || 1;
+    const tag = searchParams.get("tag");
 
-    const dispatch = useDispatch();
-    const count = useSelector((state) => state.counter.value);
-
-    useEffect(() => {
-        fetch("/api/hello")
-            .then((res) => res.json())
-            .then((data) => setMsg(data.message));
-    }, []);
-
-    const handleClick = () => {
-        dispatch(increment());
-        setAnimate(true);
-        setTimeout(() => setAnimate(false), 400);
+    const fetchPosts = async (pageNum) => {
+        const query = tag ? `?tag=${tag}&page=${pageNum}` : `?page=${pageNum}`;
+        const res = await fetch(`/api/posts${query}`);
+        const data = await res.json();
+        setPosts(data.posts);
+        setTotalPages(data.totalPages);
+        setSearchParams({ page: pageNum, ...(tag ? { tag } : {}) });
     };
 
-    return (
-        <div>
-            <h1>Home</h1>
-            <div>
-                <img src={munsikLogo} className={animate ? "logo animate-grow-shrink" : "logo"} />
-            </div>
-            <div className="card">
-                <button onClick={handleClick}>
-                    count is {count}
+    const renderPagination = () => {
+        const buttons = [];
+        const maxPage = totalPages;
+        const current = page;
+        // 이전 버튼
+        buttons.push(
+            <button
+                key="prev"
+                onClick={() => fetchPosts(current - 1)}
+                disabled={current === 1}
+                className={current === 1 ? "disabled" : ""}
+            >
+                ◀︎ 이전
+            </button>
+        );
+        // 1번 페이지
+        buttons.push(
+            <button
+                key={1}
+                onClick={() => fetchPosts(1)}
+                className={current === 1 ? "active cta-btn" : "cta-btn"}
+            >
+                1
+            </button>
+        );
+        // … 왼쪽
+        if (current > 3) {
+            buttons.push(<span key="start-ellipsis">…</span>);
+        }
+        // 현재 기준 ±1 페이지
+        for (let i = current - 1; i <= current + 1; i++) {
+            if (i > 1 && i < maxPage) {
+                buttons.push(
+                    <button
+                        key={i}
+                        onClick={() => fetchPosts(i)}
+                        className={current === i ? "active cta-btn" : "cta-btn"}
+                    >
+                        {i}
+                    </button>
+                );
+            }
+        }
+        // … 오른쪽
+        if (current < maxPage - 2) {
+            buttons.push(<span key="end-ellipsis">…</span>);
+        }
+        // 마지막 페이지
+        if (maxPage > 1) {
+            buttons.push(
+                <button
+                    key={maxPage}
+                    onClick={() => fetchPosts(maxPage)}
+                    className={current === maxPage ? "active" : ""}
+                >
+                    {maxPage}
                 </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
+            );
+        }
+        // 다음 버튼
+        buttons.push(
+            <button
+                key="next"
+                onClick={() => fetchPosts(current + 1)}
+                disabled={current === maxPage}
+                className={current === maxPage ? "disabled" : "cta-btn"}
+            >
+                다음 ▶︎
+            </button>
+        );
+        return <div className="pagination">{buttons}</div>;
+    };
+
+    useEffect(() => {
+        fetchPosts(page);
+    }, [page, tag]);
+
+    return (
+        <div className="board-wrapper">
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                }}
+            >
+                <Link to="/" style={{ textDecoration: "none" }}>
+                    <h1 className="board-title">TIL Board</h1>
+                </Link>
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "flex-end",
+                    }}
+                >
+                    {tag && (
+                        <div
+                            style={{
+                                marginBottom: "1rem",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "flex-end",
+                            }}
+                        >
+                            <span
+                                title={`#${tag}`}
+                                style={{
+                                    fontWeight: "bold",
+                                    color: "#007bff",
+                                    maxWidth: "120px",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                }}
+                            >
+                                #{tag}
+                            </span>
+                            <button
+                                onClick={() => setSearchParams({ page: 1 })}
+                                style={{
+                                    marginLeft: "0.5rem",
+                                    background: "#eee",
+                                    border: "none",
+                                    padding: "4px 8px",
+                                    cursor: "pointer",
+                                    borderRadius: "4px",
+                                    fontSize: "0.85rem",
+                                    transition: "background 0.2s ease",
+                                }}
+                                onMouseOver={(e) =>
+                                    (e.target.style.background = "#ddd")
+                                }
+                                onMouseOut={(e) =>
+                                    (e.target.style.background = "#eee")
+                                }
+                            >
+                                태그 초기화 ✕
+                            </button>
+                        </div>
+                    )}
+                    <Link to="/posts/new">
+                        <button className="cta-btn" style={{ margin: "8px" }}>
+                            작성하기
+                        </button>
+                    </Link>
+                </div>
             </div>
-            <p className="read-the-docs">
-                {msg}
-            </p>
+            <table className="board-table">
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {posts.map((post) => (
+                        <tr key={post.id}>
+                            <td>{post.id}</td>
+                            <td>
+                                <Link
+                                    to={`/posts/${post.id}`}
+                                    style={{
+                                        color: "#007bff",
+                                        textDecoration: "none",
+                                    }}
+                                >
+                                    {post.title}
+                                </Link>
+                            </td>
+                            <td>{post.author}</td>
+                            <td>
+                                {new Date(post.created_at).toLocaleString()}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <div className="pagination-wrapper">{renderPagination()}</div>
         </div>
     );
 }

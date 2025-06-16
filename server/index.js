@@ -41,7 +41,7 @@ app.post("/api/log-in", (req, res) => {
             }
 			/* JWT 토큰 생성 */
             console.log(`[Server] Logged in: ${username}`)
-			const payload = { id: user.id, username: user.username };
+			const payload = { id: user.id, username: user.username, name: user.name };
             const accessToken = generateAccessToken(payload);
             const refreshToken = generateRefreshToken(payload);
 			return res.status(200)
@@ -51,7 +51,7 @@ app.post("/api/log-in", (req, res) => {
                     sameSite: "lax",
                     maxAge: 7 * 24 * 60 * 60 * 1000,
                 })
-				.json({ accessToken, username: user.username });
+				.json({ accessToken, id: user.id, username: user.username, name: user.name });
         })
         .catch((err) => {
             console.error(err);
@@ -104,9 +104,9 @@ app.post("/api/refresh-token", (req, res) => {
     }
     try {
         const decode = jwt.verify(token, REFRESH_SECRET);
-        const accessToken = generateAccessToken({ id: decode.id, username: decode.username });
+        const accessToken = generateAccessToken({ id: decode.id, username: decode.username, name:decode.name });
         console.log(`[Server] Access token refreshed: ${decode.username}`);
-        res.json({ accessToken, username: decode.username });
+        res.json({ accessToken, username: decode.username, id: decode.id, name:decode.name });
     } catch (err) {
         // console.error("Refresh token expired or invalid");
         res.status(403).json({ error: "Invalid refresh token" });
@@ -118,3 +118,11 @@ app.post("/api/logout", (req, res) => {
     res.clearCookie("refreshToken");
     res.status(200).json({ message: "Logged out" });
 });
+
+/* 게시판 기능 */
+const postsRouter = require("./routes/posts");
+app.use("/api/posts", postsRouter);
+
+/* 댓글 기능 */
+const commentRoutes = require("./routes/comments");
+app.use("/api/posts", commentRoutes);
