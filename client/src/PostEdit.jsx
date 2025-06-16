@@ -6,12 +6,14 @@ import MarkdownEditor from "./MarkdownEditor";
 const PostEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const authorId = useSelector((state) => state.auth.id);
 
+    const [checkingLogin, setCheckingLogin] = useState(true);
+    const authorId = useSelector((state) => state.auth.id);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
     useEffect(() => {
+        if (checkingLogin && authorId === null) return;
         fetch(`/api/posts/${id}`)
             .then((res) => res.json())
             .then((data) => {
@@ -23,7 +25,8 @@ const PostEdit = () => {
                     setContent(data.content);
                 }
             });
-    }, [id, authorId, navigate]);
+        setCheckingLogin(false);
+    }, [id, authorId, checkingLogin, navigate]);
 
     const handleUpdate = async () => {
         if (!title.trim() || !content.trim()) {

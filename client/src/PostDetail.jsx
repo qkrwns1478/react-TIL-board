@@ -103,6 +103,8 @@ const PostDetail = () => {
     };
 
     return (
+        <>
+        <div style={{ height: "80px" }}></div>
         <div className="board-wrapper">
             <h2>{post.title}</h2>
             <p>
@@ -122,7 +124,7 @@ const PostDetail = () => {
             <div
                 style={{
                     width: "100%",
-                    minHeight: "400px",
+                    minHeight: "200px",
                     padding: "12px",
                     background: "#f9f9f9",
                     border: "1px solid #ccc",
@@ -237,6 +239,8 @@ const PostDetail = () => {
                 )}
             </div>
         </div>
+        <div style={{ height: "80px" }}></div>
+        </>
     );
 };
 

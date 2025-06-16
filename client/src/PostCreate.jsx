@@ -6,16 +6,19 @@ import MarkdownEditor from "./MarkdownEditor";
 const PostCreate = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [activeTab, setActiveTab] = useState("write");
     const navigate = useNavigate();
+
+    const [checkingLogin, setCheckingLogin] = useState(true);
     const authorId = useSelector((state) => state.auth.id);
 
     useEffect(() => {
+        if (checkingLogin && authorId === null) return;
         if (!authorId) {
             alert("로그인 후 이용해주세요.");
             navigate("/login");
         }
-    }, [authorId, navigate]);
+        setCheckingLogin(false);
+    }, [authorId, checkingLogin, navigate]);
 
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) {
