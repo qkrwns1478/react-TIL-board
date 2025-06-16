@@ -7,7 +7,6 @@ import logo from "./assets/logo.png";
 function Header () {
     const handleLogout = useLogout();
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-    // const username = useSelector((state) => state.auth.username);
 
     return (
         <header>

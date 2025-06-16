@@ -107,7 +107,7 @@ const PostDetail = () => {
         <div style={{ height: "80px" }}></div>
         <div className="board-wrapper">
             <h2>{post.title}</h2>
-            <p>
+            <p className="read-the-docs">
                 <strong>작성자:</strong> {post.author} |{" "}
                 <strong>작성일:</strong>{" "}
                 {new Date(post.created_at).toLocaleString()}
@@ -120,7 +120,6 @@ const PostDetail = () => {
                     <button onClick={handleDeletePost}>게시글 삭제</button>
                 </div>
             )}
-            <hr />
             <div
                 style={{
                     width: "100%",

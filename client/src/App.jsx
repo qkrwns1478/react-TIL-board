@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { setCredentials, clearAuth } from "./feat/authSlice";
 
 import Home from "./Home";
+import ProtectedRoute from "./ProtectedRoute";
 import LoginForm from "./LoginForm";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -46,7 +47,9 @@ function App() {
                     <Route path="/signup" element={<LoginForm />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/posts/:id" element={<PostDetail />} />
-                    <Route path="/posts/new" element={<PostCreate />} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/posts/new" element={<PostCreate />} />
+                    </Route>
                     <Route path="/posts/:id/edit" element={<PostEdit />} />
                     <Route path="*" element={<Error />} />
                 </Routes>

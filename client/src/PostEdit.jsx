@@ -11,6 +11,7 @@ const PostEdit = () => {
     const authorId = useSelector((state) => state.auth.id);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [tags, setTags] = useState("");
 
     useEffect(() => {
         if (checkingLogin && authorId === null) return;
@@ -41,6 +42,7 @@ const PostEdit = () => {
                 title,
                 content,
                 author_id: authorId,
+                tags: tags.split(",").map(t => t.trim()).filter(Boolean)
             }),
         });
 
@@ -55,6 +57,8 @@ const PostEdit = () => {
     };
 
     return (
+        <>
+        <div style={{ height: "80px" }}></div>
         <div className="board-wrapper">
             <input
                 value={title}
@@ -70,6 +74,8 @@ const PostEdit = () => {
                 </button>
             </div>
         </div>
+        <div style={{ height: "80px" }}></div>
+        </>
     );
 };
 

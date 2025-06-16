@@ -88,10 +88,12 @@ function Home() {
 
     return (
         <div className="board-wrapper">
-            <h1 className="board-title">TIL Board</h1>
-            <Link to="/posts/new">
-                <button className="cta-btn">작성하기</button>
-            </Link>
+            <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-end",justifyContent:"space-between" }}>
+                <h1 className="board-title">TIL Board</h1>
+                <Link to="/posts/new">
+                    <button className="cta-btn" style={{ margin: "8px" }}>작성하기</button>
+                </Link>
+            </div>
             <table className="board-table">
                 <thead>
                     <tr>

@@ -11,7 +11,7 @@ const useLogout = () => {
         fetch("/api/logout", { method: "POST" })
             .then(() => {
                 dispatch(clearAuth());
-                navigate("/");
+                navigate("/", { replace: true });
                 window.location.reload();
             })
             .catch((err) => {

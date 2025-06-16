@@ -132,6 +132,7 @@ function LoginForm() {
                                 navigate(isLoggedIn ? "/posts/new" : "/signup");
                             }
                         }}
+                        style={isAbout ? { marginBottom: "0" } : {}}
                     >
                         {isAbout
                             ? isLoggedIn

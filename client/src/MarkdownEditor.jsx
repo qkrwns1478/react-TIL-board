@@ -6,6 +6,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const MarkdownEditor = ({ content, setContent }) => {
     const [activeTab, setActiveTab] = useState("write");
+    const [tags, setTags] = useState("");
     const textareaRef = useRef();
 
     const insertMarkdown = (before, after) => {
@@ -77,7 +78,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                         <button onClick={() => insertMarkdown("**", "**")}>
                             굵게
                         </button>
-                        <button onClick={() => insertMarkdown("_", "_")}>
+                        <button onClick={() => insertMarkdown("*", "*")}>
                             기울임
                         </button>
                         <button
@@ -105,7 +106,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                     placeholder="내용을 입력하세요"
                     style={{
                         width: "100%",
-                        height: "520px",
+                        height: "480px",
                         padding: "12px",
                         resize: "none",
                     }}
@@ -114,12 +115,13 @@ const MarkdownEditor = ({ content, setContent }) => {
                 <div
                     style={{
                         width: "100%",
-                        height: "520px",
+                        height: "480px",
                         overflowY: "auto",
                         border: "1px solid #ccc",
                         padding: "12px",
                         background: "#f9f9f9",
                         textAlign: "left",
+                        marginBottom: "8px",
                     }}
                 >
                     <ReactMarkdown
@@ -156,6 +158,13 @@ const MarkdownEditor = ({ content, setContent }) => {
                     </ReactMarkdown>
                 </div>
             )}
+        <input
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="태그 입력 (쉼표로 구분)"
+            style={{ width: "100%", padding: "8px" }}
+        />
         </div>
     );
 };
