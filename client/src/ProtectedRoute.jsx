@@ -5,7 +5,7 @@ function ProtectedRoute() {
     const accessToken = useSelector((state) => state.auth.accessToken);
 
     if (accessToken === undefined) {
-        return <div>로그인 확인 중…</div>;
+        return null;
     }
     if (!accessToken) {
         alert("로그인 후 이용해주세요.");

@@ -44,7 +44,8 @@ const PostCreate = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="제목"
-                style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
+                style={{ width: "100%", padding: "8px", marginTop: "1rem", marginBottom: "1rem" }}
+                maxLength={28}
             />
             <MarkdownEditor content={content} setContent={setContent} />
             <input

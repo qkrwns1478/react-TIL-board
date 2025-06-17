@@ -197,7 +197,7 @@ router.delete("/:postId", async (req, res) => {
     if (post.author_id !== author_id)
         return res.status(403).json({ error: "권한 없음" });
     await db.query(`DELETE FROM posts WHERE id = ?`, [postId]);
-    res.json({ message: "삭제 완료" });
+    res.status(200).json({ message: "삭제 완료" });
 });
 
 /* 게시글 태그 조회 */
