@@ -33,14 +33,37 @@ router.get("/", async (req, res) => {
                 .json({ message: "사용자를 찾을 수 없습니다." });
         }
 
-        const [postRows] = await db.query(
-            `SELECT id, title, created_at FROM posts WHERE author_id = ? ORDER BY created_at DESC`,
+        // const [postRows] = await db.query(
+        //     `SELECT id, title, created_at FROM posts WHERE author_id = ? ORDER BY created_at DESC`,
+        //     [userId]
+        // );
+
+        // res.json({
+        //     user: userRows[0],
+        //     posts: postRows,
+        // });
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 10;
+        const offset = (page - 1) * pageSize;
+
+        const [[{ count }]] = await db.query(
+            `SELECT COUNT(*) as count FROM posts WHERE author_id = ?`,
             [userId]
+        );
+
+        const [postRows] = await db.query(
+                `SELECT id, title, created_at FROM posts
+                WHERE author_id = ?
+                ORDER BY created_at DESC
+                LIMIT ? OFFSET ?`,
+            [userId, pageSize, offset]
         );
 
         res.json({
             user: userRows[0],
             posts: postRows,
+            totalPages: Math.ceil(count / pageSize),
+            postCount: count,
         });
     } catch (err) {
         console.error("마이페이지 에러:", err);

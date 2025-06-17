@@ -1,31 +1,124 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "./css/Mypage.css";
 import deletePost from "./app/deletePost";
 import shortenWords from "./feat/shortenWords";
 
 function Mypage() {
     const navigate = useNavigate();
-    const { accessToken, username, name, id } = useSelector(
-        (state) => state.auth
-    );
-
+    const { accessToken, username, name, id } = useSelector((state) => state.auth);
     const [userPosts, setUserPosts] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [postCount, setPostCount] = useState(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = parseInt(searchParams.get("page")) || 1;
 
-    useEffect(() => {
-        if (!accessToken) return;
-
-        fetch("/api/mypage", {
+    const fetchMyPosts = async (pageNum) => {
+        const res = await fetch(`/api/mypage?page=${pageNum}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setUserPosts(data.posts);
-            });
-    }, [accessToken]);
+        });
+        const data = await res.json();
+        setUserPosts(data.posts);
+        setTotalPages(data.totalPages || 1);
+        setSearchParams({ page: pageNum });
+        setPostCount(data.postCount);
+    };
+
+    const renderPagination = () => {
+        const buttons = [];
+        const maxPage = totalPages;
+        const current = page;
+
+        buttons.push(
+            <button
+                key="prev"
+                onClick={() => fetchMyPosts(current - 1)}
+                disabled={current === 1}
+                className={current === 1 ? "disabled" : ""}
+            >
+                ◀ 이전
+            </button>
+        );
+
+        if (maxPage <= 5) {
+            for (let i = 1; i <= maxPage; i++) {
+                buttons.push(
+                    <button
+                        key={i}
+                        onClick={() => fetchMyPosts(i)}
+                        className={current === i ? "active" : ""}
+                    >
+                        {i}
+                    </button>
+                );
+            }
+        } else {
+            buttons.push(
+                <button
+                    key={1}
+                    onClick={() => fetchMyPosts(1)}
+                    className={current === 1 ? "active" : ""}
+                >
+                    1
+                </button>
+            );
+            if (current > 3) buttons.push(<span key="start-ellipsis">…</span>);
+            for (let i = current - 1; i <= current + 1; i++) {
+                if (i > 1 && i < maxPage) {
+                    buttons.push(
+                        <button
+                            key={i}
+                            onClick={() => fetchMyPosts(i)}
+                            className={current === i ? "active" : ""}
+                        >
+                            {i}
+                        </button>
+                    );
+                }
+            }
+            if (current < maxPage - 2) buttons.push(<span key="end-ellipsis">…</span>);
+            buttons.push(
+                <button
+                    key={maxPage}
+                    onClick={() => fetchMyPosts(maxPage)}
+                    className={current === maxPage ? "active" : ""}
+                >
+                    {maxPage}
+                </button>
+            );
+        }
+
+        buttons.push(
+            <button
+                key="next"
+                onClick={() => fetchMyPosts(current + 1)}
+                disabled={current === maxPage}
+                className={current === maxPage ? "disabled" : ""}
+            >
+                다음 ▶
+            </button>
+        );
+
+        return <div className="pagination">{buttons}</div>;
+    };
+
+    useEffect(() => {
+        if (!accessToken) return;
+        fetchMyPosts(page);
+
+        // fetch("/api/mypage", {
+        //     headers: {
+        //         Authorization: `Bearer ${accessToken}`,
+        //     },
+        // })
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         setUserPosts(data.posts);
+        //     });
+    }, [accessToken, page]);
 
     const handleEditProfile = () => navigate("/mypage/edit");
 
@@ -60,7 +153,7 @@ function Mypage() {
             </div>
 
             <div className="user-posts">
-                <h2>내가 쓴 글 ({userPosts.length})</h2>
+                <h2>내가 쓴 글 ({postCount})</h2>
                 {userPosts.length === 0 ? (
                     <p className="no-posts">작성한 글이 없습니다.</p>
                 ) : (
@@ -93,6 +186,7 @@ function Mypage() {
                         </tbody>
                     </table>
                 )}
+                {userPosts.length > 0 && renderPagination()}
             </div>
         </div>
         </div>
