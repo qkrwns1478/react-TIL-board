@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import "./css/Home.css";
+import shortenWords from "./feat/shortenWords";
 
 function Home() {
     const [posts, setPosts] = useState([]);
@@ -185,10 +186,18 @@ function Home() {
                             style={{ cursor: "pointer" }}
                         >
                             <td>{post.id}</td>
-                            <td>{post.title}</td>
+                            <td>{shortenWords(post.title, 20)}</td>
                             <td>{post.author}</td>
                             <td>
-                                {new Date(post.created_at).toLocaleString()}
+                            {new Date(post.created_at).toLocaleString("ko-KR", {
+                                year: "numeric",
+                                month: "numeric",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                                hour12: false,
+                            })}
                             </td>
                         </tr>
                     ))}

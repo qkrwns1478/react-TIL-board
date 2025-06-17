@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import deletePost from "./app/deletePost";
 
 const PostDetail = () => {
     const navigate = useNavigate();
@@ -73,7 +74,7 @@ const PostDetail = () => {
         refreshComments();
     };
 
-    const handleDelete = async (commentId) => {
+    const handleDeleteComments = async (commentId) => {
         const ok = window.confirm("정말 삭제하시겠습니까?");
         if (!ok) return;
 
@@ -98,12 +99,13 @@ const PostDetail = () => {
         );
         if (!ok) return;
 
-        await fetch(`/api/posts/${post.id}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ author_id: authorId }),
-        });
-        navigate("/");
+        try {
+            await deletePost(post.id, authorId);
+            alert("삭제가 완료되었습니다.");
+            navigate("/");
+        } catch (err) {
+            alert("삭제에 실패했습니다.");
+        }
     };
 
     return (
@@ -113,15 +115,15 @@ const PostDetail = () => {
             </div>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }}>
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <h2 style={{ marginBottom: 0 }}>{post.title}</h2>
+                    <h2 style={{ marginBottom: 0, whiteSpace: "nowrap" }}>{post.title}</h2>
                     <p className="read-the-docs" style={{ marginTop: "4px", fontSize: "0.9rem" }}>
                         <strong>작성자:</strong> {post.author} | <strong>작성일:</strong> {new Date(post.created_at).toLocaleString()}
                     </p>
                 </div>
                 {isAuthor && (
-                    <div>
-                        <Link to={`/posts/${post.id}/edit`}><button>게시글 수정</button></Link>
-                        <button onClick={handleDeletePost} style={{ marginLeft: "0.5rem" }}>게시글 삭제</button>
+                    <div style={{ display: "flex", flexDirection:"row", gap:"0.5rem" }}>
+                        <Link to={`/posts/${post.id}/edit`}><button style={{ whiteSpace: "nowrap" }}>게시글 수정</button></Link>
+                        <button style={{ whiteSpace: "nowrap" }} onClick={handleDeletePost}>게시글 삭제</button>
                     </div>
                 )}
             </div>
@@ -214,7 +216,7 @@ const PostDetail = () => {
                                 {c.author_id === authorId && (
                                     <div style={{ textAlign: "right" }}>
                                         <button onClick={() => startEdit(c)}>수정</button>
-                                        <button onClick={() => handleDelete(c.id)} style={{ marginLeft: "8px" }}>삭제</button>
+                                        <button onClick={() => handleDeleteComments(c.id)} style={{ marginLeft: "8px" }}>삭제</button>
                                     </div>
                                 )}
                             </>

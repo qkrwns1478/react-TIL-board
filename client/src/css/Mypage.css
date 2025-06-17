@@ -1,10 +1,11 @@
 .mypage-container {
-    max-width: 700px;
+    background-color: #ffffff;
+    max-width: 960px;
     margin: 40px auto;
-    padding: 20px;
-    padding-top: 80px;
-    padding-bottom: 80px;
-    font-family: Arial, sans-serif;
+    padding: 40px;
+    /* font-family: Arial, sans-serif; */
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
 .mypage-title {
@@ -17,10 +18,10 @@
 .user-info {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     background-color: #f2f2f2;
     padding: 16px;
-    border-radius: 6px;
+    border-radius: 12px;
     margin-bottom: 30px;
 }
 
