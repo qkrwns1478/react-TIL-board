@@ -64,7 +64,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                         style={{
                             marginRight: "8px",
                             backgroundColor:
-                                activeTab === "write" ? "#007bff" : "#e0e0e0",
+                                activeTab === "write" ? "#5094c4" : "#e0e0e0",
                             color: activeTab === "write" ? "#fff" : "#000",
                             border: "none",
                             padding: "6px 12px",
@@ -77,7 +77,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                         onClick={() => setActiveTab("preview")}
                         style={{
                             backgroundColor:
-                                activeTab === "preview" ? "#007bff" : "#e0e0e0",
+                                activeTab === "preview" ? "#5094c4" : "#e0e0e0",
                             color: activeTab === "preview" ? "#fff" : "#000",
                             border: "none",
                             padding: "6px 12px",
