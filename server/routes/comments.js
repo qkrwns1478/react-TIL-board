@@ -80,16 +80,27 @@ router.delete("/comments/:commentId", async (req, res) => {
     const { author_id } = req.body;
 
     try {
-        const [[comment]] = await db.query(
-            `SELECT * FROM comments WHERE id = ?`,
+        const [[comment]] = await db.query(`
+                SELECT c.author_id AS commentAuthor, p.author_id AS postAuthor
+                FROM comments c
+                JOIN posts p ON c.post_id = p.id
+                WHERE c.id = ?`,
             [commentId]
         );
-        if (!comment) return res.status(404).json({ error: "댓글 없음" });
-        if (comment.author_id !== author_id)
-            return res.status(403).json({ error: "권한 없음" });
+
+        if (!comment) {
+            return res.status(404).json({ error: "댓글을 찾을 수 없습니다." });
+        }
+
+        const isCommentAuthor = comment.commentAuthor === author_id;
+        const isPostAuthor = comment.postAuthor === author_id;
+
+        if (!isCommentAuthor && !isPostAuthor) {
+            return res.status(403).json({ error: "삭제 권한이 없습니다." });
+        }
 
         await db.query(`DELETE FROM comments WHERE id = ?`, [commentId]);
-        res.json({ message: "댓글 삭제 완료" });
+        res.status(200).json({ message: "댓글 삭제 완료" });
     } catch (err) {
         console.error("댓글 삭제 오류:", err);
         res.status(500).json({ error: "댓글 삭제 실패" });

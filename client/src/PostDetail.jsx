@@ -33,6 +33,7 @@ const PostDetail = () => {
 
     if (!post) return <div>로딩 중…</div>;
     const isAuthor = post.author_id === authorId;
+    const isPostAuthor = post.author_id === authorId;
 
     const handleCommentSubmit = async () => {
         if (!commentInput.trim()) return;
@@ -217,6 +218,11 @@ const PostDetail = () => {
                                     <div style={{ textAlign: "right" }}>
                                         <button onClick={() => startEdit(c)}>수정</button>
                                         <button onClick={() => handleDeleteComments(c.id)} style={{ marginLeft: "8px" }}>삭제</button>
+                                    </div>
+                                )}
+                                {(c.author_id !== authorId && isPostAuthor) && (
+                                    <div style={{ textAlign: "right" }}>
+                                        <button onClick={() => handleDeleteComments(c.id)}>삭제</button>
                                     </div>
                                 )}
                             </>
