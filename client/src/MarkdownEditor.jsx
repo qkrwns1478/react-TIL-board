@@ -6,7 +6,6 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const MarkdownEditor = ({ content, setContent }) => {
     const [activeTab, setActiveTab] = useState("write");
-    const [tags, setTags] = useState("");
     const textareaRef = useRef();
 
     const insertMarkdown = (before, after) => {
@@ -31,6 +30,30 @@ const MarkdownEditor = ({ content, setContent }) => {
                 end + before.length
             );
         }, 0);
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const isMarkdown = file.name.toLowerCase().endsWith(".md");
+        if (!isMarkdown) {
+            alert(".md 확장자 파일만 업로드할 수 있습니다.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const markdownText = event.target.result;
+            if (content.trim()) {
+                const ok = window.confirm(
+                    "입력창에 이미 작성된 내용이 있습니다.\n이 파일 내용으로 덮어쓰시겠습니까?"
+                );
+                if (!ok) return;
+            }
+            setContent(markdownText);
+        };
+        reader.readAsText(file);
     };
 
     const buttonStyle = {
@@ -64,7 +87,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                         style={{
                             marginRight: "8px",
                             backgroundColor:
-                                activeTab === "write" ? "#5094c4" : "#e0e0e0",
+                                activeTab === "write" ? "#23a6d5" : "#e0e0e0",
                             color: activeTab === "write" ? "#fff" : "#000",
                             border: "none",
                             padding: "6px 12px",
@@ -77,7 +100,7 @@ const MarkdownEditor = ({ content, setContent }) => {
                         onClick={() => setActiveTab("preview")}
                         style={{
                             backgroundColor:
-                                activeTab === "preview" ? "#5094c4" : "#e0e0e0",
+                                activeTab === "preview" ? "#23a6d5" : "#e0e0e0",
                             color: activeTab === "preview" ? "#fff" : "#000",
                             border: "none",
                             padding: "6px 12px",
@@ -132,18 +155,42 @@ const MarkdownEditor = ({ content, setContent }) => {
             </div>
 
             {activeTab === "write" ? (
-                <textarea
-                    ref={textareaRef}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="내용을 입력하세요"
-                    style={{
-                        width: "100%",
-                        height: "480px",
-                        padding: "12px",
-                        resize: "none",
-                    }}
-                />
+                <>
+                    <textarea
+                        ref={textareaRef}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="내용을 입력하세요"
+                        style={{
+                            width: "100%",
+                            height: "435px",
+                            padding: "12px",
+                            resize: "none",
+                        }}
+                    />
+                    <div style={{ textAlign: "right", marginBottom: "5px" }}>
+                        <input
+                            type="file"
+                            id="md-upload"
+                            accept=".md"
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                        />
+                        <button
+                            onClick={() => document.getElementById("md-upload").click()}
+                            style={{ backgroundColor: "#23a6d5", color: "white", height: "40px" }}
+                        >
+                        .md 파일 불러오기
+                        </button>
+                        <input
+                            type="file"
+                            id="md-upload"
+                            accept=".md"
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                        />
+                    </div>
+                </>
             ) : (
                 <div
                     style={{

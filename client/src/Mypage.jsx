@@ -136,7 +136,7 @@ function Mypage() {
     };
 
     const withdrawUser = async () => {
-        const ok = window.confirm("정말 회원 탈퇴하시겠습니까? (작성한 게시글과 댓글은 자동으로 삭제되지 않습니다.)");
+        const ok = window.confirm("정말 회원 탈퇴하시겠습니까?\n(작성한 게시글과 댓글은 자동으로 삭제되지 않습니다.)");
         if (!ok) return;
 
         try {
@@ -244,7 +244,7 @@ function Mypage() {
                                         return;
                                     }
                                     if (!pwForm.test(newPw)) {
-                                        alert("유효한 비밀번호를 사용해주세요. (8~16자의 영문 대/소문자, 숫자, 특수문자)");
+                                        alert("유효한 비밀번호를 사용해주세요.\n(8~16자의 영문 대/소문자, 숫자, 특수문자)");
                                         return;
                                     }
                                     if (newPw !== confirmPw) {
