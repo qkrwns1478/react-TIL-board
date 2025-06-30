@@ -185,10 +185,10 @@ function Home() {
                             onClick={() => navigate(`/posts/${post.id}`)}
                             style={{ cursor: "pointer" }}
                         >
-                            <td>{post.id}</td>
-                            <td>{shortenWords(post.title, 20)}</td>
-                            <td>{post.author}</td>
-                            <td>
+                            <td data-analytics-click={`/posts/${post.id}`}>{post.id}</td>
+                            <td data-analytics-click={`/posts/${post.id}`}>{shortenWords(post.title, 20)}</td>
+                            <td data-analytics-click={`/posts/${post.id}`}>{post.author}</td>
+                            <td data-analytics-click={`/posts/${post.id}`}>
                             {new Date(post.created_at).toLocaleString("ko-KR", {
                                 year: "numeric",
                                 month: "numeric",

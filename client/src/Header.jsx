@@ -12,7 +12,7 @@ function Header () {
         <header>
             <div>
                 <div>
-                    <Link to = "/">
+                    <Link to = "/" data-analytics-click="home_cta">
                         <img src={logo} id="mainLogo"/>
                     </Link>
                 </div>
