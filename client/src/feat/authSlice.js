@@ -7,6 +7,8 @@ const authSlice = createSlice({
         username: null,
         name: null,
         id: null,
+        gender: null,
+        age: null,
         isLoggedIn: false,
     },
     reducers: {
@@ -15,6 +17,8 @@ const authSlice = createSlice({
             state.username = action.payload.username;
             state.name = action.payload.name;
             state.id = action.payload.id;
+            state.gender = action.payload.gender;
+            state.age = action.payload.age;
             state.isLoggedIn = true;
         },
         clearAuth: (state) => {
@@ -22,6 +26,8 @@ const authSlice = createSlice({
             state.username = null;
             state.name = null;
             state.id = null;
+            state.gender = null;
+            state.age = null;
             state.isLoggedIn = false;
         },
     },

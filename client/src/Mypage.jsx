@@ -9,7 +9,7 @@ import { setCredentials, clearAuth } from "./feat/authSlice";
 function Mypage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { accessToken, username, name, id } = useSelector((state) => state.auth);
+  const { accessToken, username, name, id, gender, age } = useSelector((state) => state.auth);
   const [userPosts, setUserPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [postCount, setPostCount] = useState(1);
@@ -18,6 +18,8 @@ function Mypage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(name);
+  const [newGender, setNewGender] = useState(gender);
+  const [newAge, setNewAge] = useState(age);
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -179,6 +181,12 @@ function Mypage() {
               >
                 <p className="user-name">{`이름: ${name}`}</p>
                 <p className="user-id">{`ID: ${username}`}</p>
+                <p className="user-gender">{`성별: ${
+                  gender === "male" ? "남성" :
+                  gender === "female" ? "여성" :
+                  "선택 안 함"
+                }`}</p>
+                <p className="user-age">{`나이: ${age}대`}</p>
               </div>
               <button
                 className="edit-button"
@@ -204,6 +212,8 @@ function Mypage() {
                       },
                       body: JSON.stringify({
                         name: newName,
+                        gender: newGender,
+                        age: newAge
                       }),
                     }
                   );
@@ -214,8 +224,10 @@ function Mypage() {
                       username: data.username,
                       id: data.id,
                       name: data.name,
+                      gender: data.gender,
+                      age: data.age
                     }));
-                    alert("이름이 변경되었습니다.");
+                    alert("변경되었습니다.");
                     navigate("/mypage");
                     setIsEditing(false);
                   } else {
@@ -223,7 +235,7 @@ function Mypage() {
                   }
                 }}
               >
-                <h3>이름 변경</h3>
+                <h3>이름</h3>
                 <input
                   type="text"
                   value={newName}
@@ -231,7 +243,24 @@ function Mypage() {
                   required
                   maxLength={10}
                 />
-                <button type="submit">이름 저장</button>
+                <h3>성별</h3>
+                <select value={gender} onChange={(e) => setNewGender(e.target.value)}>
+                  <option value="">선택 안 함</option>
+                  <option value="male">남성</option>
+                  <option value="female">여성</option>
+                </select>
+
+                <h3>연령대</h3>
+                <select value={age} onChange={(e) => setNewAge(Number(e.target.value))}>
+                  <option value={0}>선택 안 함</option>
+                  <option value={10}>10대</option>
+                  <option value={20}>20대</option>
+                  <option value={30}>30대</option>
+                  <option value={40}>40대</option>
+                  <option value={50}>50대</option>
+                  <option value={60}>60대 이상</option>
+                </select>
+                <button type="submit">변경사항 저장</button>
               </form>
               <form
                 style={{ display: "flex", flexDirection: "column", gap: "6px" }}

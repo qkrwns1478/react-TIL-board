@@ -33,6 +33,8 @@ function App() {
                     username: data.username,
                     id: data.id,
                     name: data.name,
+                    gender: data.gender,
+                    age: data.age
                 }));
             } else {
                 dispatch(clearAuth());

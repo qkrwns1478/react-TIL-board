@@ -89,7 +89,7 @@ router.put("/edit", async (req, res) => {
         return res.status(403).json({ message: "토큰 검증 실패" });
     }
 
-    const { name, currentPassword, newPassword } = req.body;
+    const { name, gender, age, currentPassword, newPassword } = req.body;
 
     try {
         const [[user]] = await db.query(
@@ -101,16 +101,18 @@ router.put("/edit", async (req, res) => {
             return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
         }
 
-        // 이름만 변경하는 경우
+        // 비밀번호는 변경하지 않는 경우
         if (!newPassword) {
             await db.query(`UPDATE userinfo SET name = ? WHERE id = ?`, [name, userId]);
+            await db.query(`UPDATE userinfo SET gender = ? WHERE id = ?`, [gender, userId]);
+            await db.query(`UPDATE userinfo SET age = ? WHERE id = ?`, [age, userId]);
             // 토큰 재발급
             const [[userinfo]] = await db.query(
                 `SELECT * FROM userinfo WHERE id = ?`,
                 [userId]
             );
-            console.log(`[Server] ${userinfo.username}'s name is changed to ${userinfo.name}`);
-            const payload = { id: userinfo.id, username: userinfo.username, name: userinfo.name };
+            // console.log(`[Server] ${userinfo.username}'s name is changed to ${userinfo.name}`);
+            const payload = { id: userinfo.id, username: userinfo.username, name: userinfo.name, gender: userinfo.gender, age: userinfo.age };
             const accessToken = generateAccessToken(payload);
             const refreshToken = generateRefreshToken(payload);
             return res.status(200)
@@ -125,7 +127,9 @@ router.put("/edit", async (req, res) => {
                     accessToken: accessToken,
                     id: userinfo.id,
                     username: userinfo.username,
-                    name: userinfo.name
+                    name: userinfo.name,
+                    gender: userinfo.gender,
+                    age: userinfo.age
             });
         }
 

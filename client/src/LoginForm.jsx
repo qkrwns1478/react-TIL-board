@@ -95,6 +95,8 @@ function LoginForm() {
                             username: data.username,
                             name: data.name,
                             id: data.id,
+                            gender: data.gender,
+                            age: data.age
                         }));
                         const userdata = {
                             id: data.id,
