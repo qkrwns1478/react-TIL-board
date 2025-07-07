@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCredentials, clearAuth } from "./feat/authSlice";
 
 import Home from "./Home";
@@ -18,7 +18,12 @@ import "./css/App.css";
 
 function App() {
     const dispatch = useDispatch();
+    const auth = useSelector((state) => state.auth);
     useEffect(() => {
+        // console.log(auth?.username);
+        // if (auth?.username && window.analytics) {
+        //     window.analytics.setUserId(auth.username, "male", "23");
+        // }
         fetch("/api/refresh-token", { method: "POST", credentials: "include",})
             .then((res) => res.json())
             .then((data) => {
@@ -28,15 +33,23 @@ function App() {
                     username: data.username,
                     id: data.id,
                     name: data.name,
+                    gender: data.gender,
+                    age: data.age
                 }));
             } else {
                 dispatch(clearAuth());
             }
+            const userdata = {
+                id: data.id,
+                gender: data.gender,
+                age: data.age
+            };
+            localStorage.setItem("user_data", JSON.stringify(userdata));
         })
         .catch(() => {
             dispatch(clearAuth());
         });
-    }, []);
+    }, [auth?.username]);
 
     return (
         <BrowserRouter>

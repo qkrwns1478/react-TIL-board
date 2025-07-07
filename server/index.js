@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = 3001;
 const db = require("./db.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -12,13 +12,13 @@ app.use(cookieParser());
 
 const cors = require("cors");
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
     credentials: true,
 }));
-
-app.get("/api/hello", (req, res) => {
-    res.json({ message: "Hello from Express!" });
-});
+// app.use(cors({
+//     origin: '*',
+//     methods: ['POST'],
+// }));
 
 app.listen(port, () => {
     console.log(`[Server] listening on http://localhost:${port}`);
@@ -51,7 +51,7 @@ app.post("/api/log-in", (req, res) => {
                     sameSite: "lax",
                     maxAge: 7 * 24 * 60 * 60 * 1000,
                 })
-				.json({ accessToken, id: user.id, username: user.username, name: user.name });
+				.json({ accessToken, id: user.id, username: user.username, name: user.name, gender: user.gender, age: user.age });
         })
         .catch((err) => {
             console.error(err);
@@ -106,7 +106,7 @@ app.post("/api/refresh-token", (req, res) => {
         const decode = jwt.verify(token, REFRESH_SECRET);
         const accessToken = generateAccessToken({ id: decode.id, username: decode.username, name:decode.name });
         console.log(`[Server] Access token refreshed: ${decode.username}`);
-        res.json({ accessToken, username: decode.username, id: decode.id, name:decode.name });
+        res.json({ accessToken, username: decode.username, id: decode.id, name:decode.name, gender: decode.gender, age: decode.age });
     } catch (err) {
         // console.error("Refresh token expired or invalid");
         res.status(403).json({ error: "Invalid refresh token" });
