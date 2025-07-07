@@ -21,9 +21,9 @@ function App() {
     const auth = useSelector((state) => state.auth);
     useEffect(() => {
         // console.log(auth?.username);
-        if (auth?.username && window.analytics) {
-            window.analytics.setUserId(auth.username);
-        }
+        // if (auth?.username && window.analytics) {
+        //     window.analytics.setUserId(auth.username, "male", "23");
+        // }
         fetch("/api/refresh-token", { method: "POST", credentials: "include",})
             .then((res) => res.json())
             .then((data) => {
@@ -37,6 +37,12 @@ function App() {
             } else {
                 dispatch(clearAuth());
             }
+            const userdata = {
+                id: data.id,
+                gender: data.gender,
+                age: data.age
+            };
+            localStorage.setItem("user_data", JSON.stringify(userdata));
         })
         .catch(() => {
             dispatch(clearAuth());
