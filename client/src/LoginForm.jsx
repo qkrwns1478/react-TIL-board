@@ -95,7 +95,15 @@ function LoginForm() {
                             username: data.username,
                             name: data.name,
                             id: data.id,
+                            gender: data.gender,
+                            age: data.age
                         }));
+                        const userdata = {
+                            id: data.id,
+                            gender: data.gender,
+                            age: data.age
+                        };
+                        localStorage.setItem("user_data", JSON.stringify(userdata));
                         navigate("/");
                     } else {
                         setLoginCheck(true);
